@@ -69,6 +69,15 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api');
 
+  // Health check endpoint (before prefix)
+  app.getHttpAdapter().get('/', (req, res) => {
+    res.json({ 
+      message: 'TaskFlow API is running',
+      status: 'ok',
+      api: '/api'
+    });
+  });
+
   await app.listen(port);
   console.log(`🚀 Backend server running on http://localhost:${port}/api`);
 }
