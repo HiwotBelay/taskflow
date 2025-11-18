@@ -273,8 +273,9 @@ The application is deployed using:
 
 ### Live URLs
 
-- **Frontend**: [Your Vercel URL]
-- **Backend API**: [Your Render URL]/api
+- **Frontend**: [Add your Vercel URL after deployment]
+- **Backend API**: https://taskflow-7fi2.onrender.com/api
+- **Health Check**: https://taskflow-7fi2.onrender.com
 
 ### Deployment Steps
 
