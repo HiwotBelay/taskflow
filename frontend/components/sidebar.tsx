@@ -7,10 +7,13 @@ import {
   Bell,
   LogOut,
   Target,
+  Menu,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { clearAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
   activeView: string;
@@ -21,6 +24,24 @@ interface SidebarProps {
 
 export function Sidebar({ activeView, onViewChange }: SidebarProps) {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handleViewChange = (view: "dashboard" | "projects" | "team" | "notifications") => {
+    onViewChange(view);
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
 
   const menuItems = [
     {
@@ -52,79 +73,112 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
   };
 
   return (
-    <aside className="w-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 flex flex-col shadow-xl">
-      {/* Logo */}
-      <div className="p-6 border-b border-slate-200/50 dark:border-slate-800/50">
-        <div
-          className="flex items-center gap-3 group cursor-pointer"
-          onClick={() => router.push("/")}
+    <>
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="fixed top-4 left-4 z-50 p-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-lg shadow-lg border border-slate-200/50 dark:border-slate-800/50"
         >
-          <div className="w-12 h-12 rounded-xl bg-[#FD8958] flex items-center justify-center shadow-md transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-            <Target className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-slate-800 dark:text-white">
-              TaskFlow
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Project Management
-            </p>
+          {isOpen ? (
+            <X className="w-6 h-6 text-slate-800 dark:text-white" />
+          ) : (
+            <Menu className="w-6 h-6 text-slate-800 dark:text-white" />
+          )}
+        </button>
+      )}
+
+      {/* Overlay for mobile */}
+      {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`${
+          isMobile
+            ? `fixed top-0 left-0 h-full z-50 transform transition-transform duration-300 ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+              }`
+            : "relative"
+        } w-72 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 flex flex-col shadow-xl`}
+      >
+        {/* Logo */}
+        <div className="p-6 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div
+            className="flex items-center gap-3 group cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            <div className="w-12 h-12 rounded-xl bg-[#FD8958] flex items-center justify-center shadow-md transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+              <Target className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-slate-800 dark:text-white">
+                TaskFlow
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                Project Management
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeView === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onViewChange(item.id as any)}
-              className={`group relative w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 ${
-                isActive
-                  ? "bg-[#FD8958] text-white shadow-sm transform scale-[1.02]"
-                  : "text-slate-600 dark:text-slate-300 hover:bg-[#F8EEF8] dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
-              )}
-              <div
-                className={`${
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleViewChange(item.id as any)}
+                className={`group relative w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 ${
                   isActive
-                    ? "text-white"
-                    : `text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200`
-                } transition-colors`}
+                    ? "bg-[#FD8958] text-white shadow-sm transform scale-[1.02]"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-[#F8EEF8] dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white"
+                }`}
               >
-                <Icon className="w-5 h-5" />
-              </div>
-              <span
-                className={`font-semibold ${
-                  isActive ? "text-white" : ""
-                } transition-colors`}
-              >
-                {item.label}
-              </span>
-              {!isActive && (
-                <div className="ml-auto w-2 h-2 rounded-full bg-[#FD8958] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              )}
-            </button>
-          );
-        })}
-      </nav>
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
+                )}
+                <div
+                  className={`${
+                    isActive
+                      ? "text-white"
+                      : `text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200`
+                  } transition-colors`}
+                >
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span
+                  className={`font-semibold ${
+                    isActive ? "text-white" : ""
+                  } transition-colors`}
+                >
+                  {item.label}
+                </span>
+                {!isActive && (
+                  <div className="ml-auto w-2 h-2 rounded-full bg-[#FD8958] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                )}
+              </button>
+            );
+          })}
+        </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-slate-200/50 dark:border-slate-800/50">
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300 group"
-        >
-          <LogOut className="w-5 h-5 group-hover:rotate-[-15deg] transition-transform" />
-          <span className="font-semibold">Logout</span>
-        </button>
-      </div>
-    </aside>
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-200/50 dark:border-slate-800/50">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300 group"
+          >
+            <LogOut className="w-5 h-5 group-hover:rotate-[-15deg] transition-transform" />
+            <span className="font-semibold">Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

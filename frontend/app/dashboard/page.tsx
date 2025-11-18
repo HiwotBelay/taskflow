@@ -42,11 +42,16 @@ export default function DashboardPage() {
           ></div>
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 hidden md:block">
           <Sidebar activeView={activeView} onViewChange={setActiveView} />
         </div>
 
-        <main className="flex-1 overflow-hidden flex flex-col relative z-10">
+        {/* Mobile Sidebar */}
+        <div className="relative z-10 md:hidden">
+          <Sidebar activeView={activeView} onViewChange={setActiveView} />
+        </div>
+
+        <main className="flex-1 overflow-hidden flex flex-col relative z-10 w-full md:w-auto">
           {/* Header with back button */}
           <header className="px-8 py-6 border-b border-white/20 bg-white/40 backdrop-blur-xl shadow-sm flex items-center justify-between">
             <button
