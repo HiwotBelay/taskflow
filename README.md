@@ -385,10 +385,6 @@ cd frontend
 npm run lint
 ```
 
-## 📸 Screenshots
-
-_Add screenshots of your application here to showcase the UI and features._
-
 ## 🤝 Contributing
 
 This is a challenge project, but contributions and improvements are welcome!
