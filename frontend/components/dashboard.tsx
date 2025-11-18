@@ -155,7 +155,7 @@ export function Dashboard({
 
       <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -164,19 +164,19 @@ export function Dashboard({
                 className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-500 border border-slate-200/50 dark:border-slate-700/50 hover:border-[#FD8958]/30 transform hover:-translate-y-1"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold mb-1 sm:mb-2 uppercase tracking-wide truncate">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0 w-full sm:w-auto">
+                    <p className="text-[10px] xs:text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold mb-1 sm:mb-2 uppercase tracking-wide line-clamp-1">
                       {stat.label}
                     </p>
-                    <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
+                    <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
                       {stat.value}
                     </p>
                   </div>
                   <div
-                    className={`bg-gradient-to-br ${stat.color} p-3 sm:p-4 rounded-xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0`}
+                    className={`bg-gradient-to-br ${stat.color} p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0 self-end sm:self-auto`}
                   >
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </div>
                 </div>
                 {/* Decorative line */}
