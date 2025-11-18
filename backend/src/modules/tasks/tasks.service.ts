@@ -83,11 +83,16 @@ export class TasksService {
       query.where('task.project.id = :projectId', { projectId });
     }
 
-    // Team Members only see tasks assigned to them or tasks in projects they created
+    // Team Members can see all tasks in projects they're part of (for collaboration)
+    // But when viewing all tasks (no projectId), they only see tasks assigned to them
     if (userRole !== UserRole.ADMIN && userRole !== UserRole.MANAGER && userId) {
       if (projectId) {
-        query.andWhere('(task.assignedTo.id = :userId OR task.createdBy.id = :userId OR project.createdBy.id = :userId)', { userId });
+        // When viewing a specific project, team members can see ALL tasks in that project
+        // This allows them to see what others are working on for better collaboration
+        // They can still only UPDATE tasks assigned to them (enforced in update method)
+        query.andWhere('project.id = :projectId', { projectId });
       } else {
+        // When viewing all tasks (no project filter), show only assigned tasks
         query.where('task.assignedTo.id = :userId', { userId })
           .orWhere('task.createdBy.id = :userId', { userId })
           .orWhere('project.createdBy.id = :userId', { userId });

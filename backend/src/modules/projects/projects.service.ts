@@ -59,9 +59,11 @@ export class ProjectsService {
       .leftJoinAndSelect('project.tasks', 'tasks')
       .leftJoinAndSelect('tasks.assignedTo', 'assignedTo');
 
-    // Managers/Admins see all projects, Team Members only see projects where they have tasks
+    // Managers/Admins see all projects
+    // Team Members see projects where they have tasks OR projects they created
+    // This ensures they can access projects they're working on
     if (userRole !== UserRole.ADMIN && userRole !== UserRole.MANAGER && userId) {
-      // Team Members only see projects where they have assigned tasks or projects they created
+      // Team Members see projects where they have assigned tasks or projects they created
       query.where('tasks.assignedTo.id = :userId', { userId })
         .orWhere('project.createdBy.id = :userId', { userId });
     }
