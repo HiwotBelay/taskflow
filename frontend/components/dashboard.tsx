@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, TrendingUp, AlertCircle, Clock, FolderOpen } from 'lucide-react';
+import { Plus, TrendingUp, AlertCircle, Clock, FolderOpen } from "lucide-react";
 import { ProjectCard } from "./project-card";
 import { CreateProjectModal } from "./create-project-modal";
 import { TaskCard } from "./task-card";
