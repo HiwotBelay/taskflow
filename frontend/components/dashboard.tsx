@@ -129,54 +129,54 @@ export function Dashboard({
   return (
     <div className="flex-1 overflow-auto bg-gradient-to-br from-[#F8EEF8] via-white to-[#FFF4F0] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 p-6 md:p-8 sticky top-0 z-10 shadow-sm">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-4xl md:text-5xl font-semibold mb-2">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 p-4 sm:p-6 md:p-8 sticky top-0 z-10 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-1 sm:mb-2">
               <span className="text-slate-800 dark:text-white">
                 Welcome Back!
               </span>
             </h2>
-            <p className="text-slate-600 dark:text-slate-400 font-medium text-lg">
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-400 font-medium">
               Here's what's happening with your projects today
             </p>
           </div>
           {canCreateProjects() && (
             <button
               onClick={() => setShowCreateProject(true)}
-              className="group flex items-center gap-2 bg-[#FD8958] hover:bg-[#E8703F] text-white px-6 py-3.5 rounded-xl font-medium transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98]"
+              className="group flex items-center gap-2 bg-[#FD8958] hover:bg-[#E8703F] text-white px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-medium transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto justify-center"
             >
-              <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-              New Project
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300" />
+              <span className="text-sm sm:text-base">New Project</span>
             </button>
           )}
         </div>
       </header>
 
-      <div className="p-6 md:p-8 space-y-8">
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
               <div
                 key={stat.label}
-                className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-500 border border-slate-200/50 dark:border-slate-700/50 hover:border-[#FD8958]/30 transform hover:-translate-y-1"
+                className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-4 sm:p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-500 border border-slate-200/50 dark:border-slate-700/50 hover:border-[#FD8958]/30 transform hover:-translate-y-1"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2 uppercase tracking-wide">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-semibold mb-1 sm:mb-2 uppercase tracking-wide truncate">
                       {stat.label}
                     </p>
-                    <p className="text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
+                    <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
                       {stat.value}
                     </p>
                   </div>
                   <div
-                    className={`bg-gradient-to-br ${stat.color} p-4 rounded-xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}
+                    className={`bg-gradient-to-br ${stat.color} p-3 sm:p-4 rounded-xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0`}
                   >
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
                 {/* Decorative line */}
@@ -188,26 +188,26 @@ export function Dashboard({
 
         {/* Projects Section */}
         <section>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-8 bg-[#FD8958] rounded-full"></div>
-            <h3 className="text-3xl font-semibold text-slate-800 dark:text-white">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-1 h-6 sm:h-8 bg-[#FD8958] rounded-full"></div>
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-800 dark:text-white">
               Active Projects
             </h3>
           </div>
           {projects.length === 0 ? (
-            <div className="text-center py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-[#F8EEF8] dark:bg-[#F8EEF8]/20 rounded-2xl mb-4">
-                <FolderOpen className="w-10 h-10 text-[#FD8958]" />
+            <div className="text-center py-12 sm:py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-[#F8EEF8] dark:bg-[#F8EEF8]/20 rounded-xl sm:rounded-2xl mb-3 sm:mb-4">
+                <FolderOpen className="w-8 h-8 sm:w-10 sm:h-10 text-[#FD8958]" />
               </div>
-              <p className="text-slate-600 dark:text-slate-400 font-semibold text-lg">
+              <p className="text-slate-600 dark:text-slate-400 font-semibold text-base sm:text-lg">
                 No projects yet.
               </p>
-              <p className="text-slate-500 dark:text-slate-500 text-sm mt-1">
+              <p className="text-slate-500 dark:text-slate-500 text-xs sm:text-sm mt-1">
                 Create your first project to get started!
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
               {projects.map((project) => (
                 <ProjectCard
                   key={project.id}
@@ -233,26 +233,26 @@ export function Dashboard({
 
         {/* Tasks Section */}
         <section>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-8 bg-[#FD8958] rounded-full"></div>
-            <h3 className="text-3xl font-semibold text-slate-800 dark:text-white">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-1 h-6 sm:h-8 bg-[#FD8958] rounded-full"></div>
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-800 dark:text-white">
               My Tasks
             </h3>
           </div>
           {tasks.length === 0 ? (
-            <div className="text-center py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-[#F8EEF8] dark:bg-[#F8EEF8]/20 rounded-2xl mb-4">
-                <Clock className="w-10 h-10 text-[#FD8958]" />
+            <div className="text-center py-12 sm:py-16 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-[#F8EEF8] dark:bg-[#F8EEF8]/20 rounded-xl sm:rounded-2xl mb-3 sm:mb-4">
+                <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-[#FD8958]" />
               </div>
-              <p className="text-slate-600 dark:text-slate-400 font-semibold text-lg">
+              <p className="text-slate-600 dark:text-slate-400 font-semibold text-base sm:text-lg">
                 No tasks assigned yet.
               </p>
-              <p className="text-slate-500 dark:text-slate-500 text-sm mt-1">
+              <p className="text-slate-500 dark:text-slate-500 text-xs sm:text-sm mt-1">
                 Tasks will appear here once assigned.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4">
               {tasks.slice(0, 4).map((task) => (
                 <TaskCard
                   key={task.id}
