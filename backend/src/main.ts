@@ -7,7 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const port = configService.get('PORT', 3001);
+  // Render sets PORT automatically, fallback to 3001 for local dev
+  const port = process.env.PORT || configService.get('PORT', 3001);
   const frontendUrl = configService.get('FRONTEND_URL', 'http://localhost:3000');
 
   // Enable CORS
