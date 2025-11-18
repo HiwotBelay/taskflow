@@ -16,22 +16,36 @@ import { Notification } from '../modules/notifications/entities/notification.ent
         const databaseUrl = configService.get('DATABASE_URL');
         
         if (databaseUrl) {
-          // Use full connection string - TypeORM will parse it
-          // For Supabase, we need to handle IPv6 issues
-          const isSupabase = databaseUrl.includes('supabase.co');
-          
-          return {
-            type: 'postgres',
-            url: databaseUrl,
-            entities: [Project, Task, TeamMember, Issue, Notification],
-            synchronize: true,
-            logging: configService.get('NODE_ENV') === 'development',
-            ssl: isSupabase ? { rejectUnauthorized: false } : false,
-            extra: isSupabase ? {
-              // Try to prefer IPv4
-              connectionTimeoutMillis: 10000,
-            } : undefined,
-          };
+          // Parse the connection string manually to avoid parsing issues
+          try {
+            const url = new URL(databaseUrl);
+            const isSupabase = url.hostname.includes('supabase.co');
+            
+            // Extract password from URL (it might be encoded)
+            const password = decodeURIComponent(url.password || '');
+            const username = decodeURIComponent(url.username || '');
+            const database = url.pathname.replace('/', '') || 'postgres';
+            const port = parseInt(url.port || '5432', 10);
+            
+            return {
+              type: 'postgres',
+              host: url.hostname,
+              port: port,
+              username: username,
+              password: password,
+              database: database,
+              entities: [Project, Task, TeamMember, Issue, Notification],
+              synchronize: true,
+              logging: configService.get('NODE_ENV') === 'development',
+              ssl: isSupabase ? { rejectUnauthorized: false } : false,
+              extra: isSupabase ? {
+                connectionTimeoutMillis: 10000,
+              } : undefined,
+            };
+          } catch (error) {
+            // If URL parsing fails, fall through to individual variables
+            console.error('Failed to parse DATABASE_URL:', error);
+          }
         }
         
         // Fallback to individual variables
