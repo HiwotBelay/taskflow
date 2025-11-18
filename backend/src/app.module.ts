@@ -7,6 +7,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { TeamMembersModule } from './modules/team-members/team-members.module';
 import { IssuesModule } from './modules/issues/issues.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     IssuesModule,
     NotificationsModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
 

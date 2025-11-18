@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, RequestMethod } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 
@@ -66,18 +66,10 @@ async function bootstrap() {
     }),
   );
 
-  // Health check endpoint (before prefix)
-  app.getHttpAdapter().get('/', (req, res) => {
-    res.json({ 
-      message: 'TaskFlow API is running',
-      status: 'ok',
-      api: '/api',
-      version: '1.0.0'
-    });
+  // Global prefix (excludes health check at root)
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: '', method: RequestMethod.GET }],
   });
-
-  // Global prefix
-  app.setGlobalPrefix('api');
 
   await app.listen(port);
   console.log(`🚀 Backend server running on http://localhost:${port}/api`);
