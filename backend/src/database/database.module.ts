@@ -11,17 +11,49 @@ import { Notification } from '../modules/notifications/entities/notification.ent
   imports: [
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DATABASE_HOST', 'localhost'),
-        port: configService.get('DATABASE_PORT', 5432),
-        username: configService.get('DATABASE_USER', 'taskflow_user'),
-        password: configService.get('DATABASE_PASSWORD', 'password'),
-        database: configService.get('DATABASE_NAME', 'taskflow_db'),
-        entities: [Project, Task, TeamMember, Issue, Notification],
-        synchronize: true, // Auto-create tables (set to false in production)
-        logging: configService.get('NODE_ENV') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get('DATABASE_HOST', 'localhost');
+        // Clean host - remove any protocol, connection string parts, or IPv6 addresses
+        let cleanHost = host;
+        if (host.includes('://')) {
+          // Remove postgresql:// or https://
+          cleanHost = host.split('://')[1];
+          if (cleanHost.includes('@')) {
+            // Remove user:pass@
+            cleanHost = cleanHost.split('@')[1];
+          }
+          if (cleanHost.includes('/')) {
+            // Remove /database
+            cleanHost = cleanHost.split('/')[0];
+          }
+        }
+        // Remove port if included
+        if (cleanHost.includes(':')) {
+          cleanHost = cleanHost.split(':')[0];
+        }
+        
+        const port = parseInt(configService.get('DATABASE_PORT', '5432'), 10);
+        const isSupabase = cleanHost.includes('supabase.co') || cleanHost.includes('pooler.supabase.com');
+        
+        return {
+          type: 'postgres',
+          host: cleanHost,
+          port: port,
+          username: configService.get('DATABASE_USER', 'taskflow_user'),
+          password: configService.get('DATABASE_PASSWORD', 'password'),
+          database: configService.get('DATABASE_NAME', 'taskflow_db'),
+          entities: [Project, Task, TeamMember, Issue, Notification],
+          synchronize: true,
+          logging: configService.get('NODE_ENV') === 'development',
+          ssl: isSupabase ? { rejectUnauthorized: false } : false,
+          extra: {
+            // Force IPv4 for Supabase connections
+            ...(isSupabase && {
+              connectionTimeoutMillis: 10000,
+            }),
+          },
+        };
+      },
       inject: [ConfigService],
     }),
   ],
