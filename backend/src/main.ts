@@ -8,7 +8,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   // Render sets PORT automatically, fallback to 3001 for local dev
-  const port = process.env.PORT || configService.get('PORT', 3001);
+  const port = parseInt(process.env.PORT || configService.get('PORT', '3001'), 10);
   const frontendUrl = configService.get('FRONTEND_URL', 'http://localhost:3000');
 
   // Enable CORS
