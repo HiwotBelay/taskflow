@@ -12,33 +12,37 @@ import { Notification } from '../modules/notifications/entities/notification.ent
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const host = configService.get('DATABASE_HOST', 'localhost');
-        // Clean host - remove any protocol, connection string parts, or IPv6 addresses
-        let cleanHost = host;
-        if (host.includes('://')) {
-          // Remove postgresql:// or https://
-          cleanHost = host.split('://')[1];
-          if (cleanHost.includes('@')) {
-            // Remove user:pass@
-            cleanHost = cleanHost.split('@')[1];
-          }
-          if (cleanHost.includes('/')) {
-            // Remove /database
-            cleanHost = cleanHost.split('/')[0];
-          }
-        }
-        // Remove port if included
-        if (cleanHost.includes(':')) {
-          cleanHost = cleanHost.split(':')[0];
+        // Try DATABASE_URL first (full connection string)
+        const databaseUrl = configService.get('DATABASE_URL');
+        
+        if (databaseUrl) {
+          // Use full connection string - TypeORM will parse it
+          // For Supabase, we need to handle IPv6 issues
+          const isSupabase = databaseUrl.includes('supabase.co');
+          
+          return {
+            type: 'postgres',
+            url: databaseUrl,
+            entities: [Project, Task, TeamMember, Issue, Notification],
+            synchronize: true,
+            logging: configService.get('NODE_ENV') === 'development',
+            ssl: isSupabase ? { rejectUnauthorized: false } : false,
+            extra: isSupabase ? {
+              // Try to prefer IPv4
+              connectionTimeoutMillis: 10000,
+            } : undefined,
+          };
         }
         
+        // Fallback to individual variables
+        const host = configService.get('DATABASE_HOST', 'localhost');
         const port = parseInt(configService.get('DATABASE_PORT', '5432'), 10);
-        const isSupabase = cleanHost.includes('supabase.co') || cleanHost.includes('pooler.supabase.com');
-        const isNeon = cleanHost.includes('neon.tech');
+        const isSupabase = host.includes('supabase.co') || host.includes('pooler.supabase.com');
+        const isNeon = host.includes('neon.tech');
         
         return {
           type: 'postgres',
-          host: cleanHost,
+          host: host,
           port: port,
           username: configService.get('DATABASE_USER', 'taskflow_user'),
           password: configService.get('DATABASE_PASSWORD', 'password'),
@@ -47,12 +51,6 @@ import { Notification } from '../modules/notifications/entities/notification.ent
           synchronize: true,
           logging: configService.get('NODE_ENV') === 'development',
           ssl: (isSupabase || isNeon) ? { rejectUnauthorized: false } : false,
-          extra: {
-            // Force IPv4 for Supabase connections
-            ...(isSupabase && {
-              connectionTimeoutMillis: 10000,
-            }),
-          },
         };
       },
       inject: [ConfigService],
