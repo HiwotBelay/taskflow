@@ -27,6 +27,7 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 ## 🛠 Tech Stack
 
 **Frontend:**
+
 - React 19
 - Next.js 16
 - TypeScript
@@ -36,6 +37,7 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 - Zod Validation
 
 **Backend:**
+
 - NestJS 10
 - TypeORM
 - PostgreSQL
@@ -45,6 +47,7 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 - Class Validator
 
 **Database:**
+
 - PostgreSQL 15+
 
 ## 🚀 Quick Start
@@ -216,16 +219,19 @@ taskflow/
 The system implements three user roles with different permissions:
 
 ### Admin
+
 - Full CRUD access to all resources
 - Can create, update, and delete projects and tasks
 - Can assign tasks to any team member
 
 ### Manager
+
 - Full CRUD access to all resources
 - Can create, update, and delete projects and tasks
 - Can assign tasks to any team member
 
 ### Team Member
+
 - **View-only** access to projects and tasks
 - Can only **update status** of tasks assigned to them
 - Cannot create, delete, or reassign tasks
@@ -280,11 +286,13 @@ The application is deployed using:
 ### Deployment Steps
 
 1. **Database Setup (Neon)**
+
    - Create account at [neon.tech](https://neon.tech)
    - Create a new project
    - Copy connection credentials
 
 2. **Backend Deployment (Render)**
+
    - Create account at [render.com](https://render.com)
    - Connect GitHub repository
    - Set root directory to `backend`
@@ -293,6 +301,7 @@ The application is deployed using:
    - Add environment variables (database credentials, JWT secret, etc.)
 
 3. **Frontend Deployment (Vercel)**
+
    - Create account at [vercel.com](https://vercel.com)
    - Import GitHub repository
    - Set root directory to `frontend`
@@ -308,11 +317,13 @@ The application is deployed using:
 The system provides comprehensive schedule adjustment capabilities:
 
 1. **Task Schedule Adjustment:**
+
    - Edit any task to change its due date
    - Automatic notifications sent to assigned team members
    - Visual indicators show schedule changes
 
 2. **Project Schedule Adjustment:**
+
    - Update project deadlines
    - All team members with tasks in the project are notified
    - Progress tracking automatically updates
