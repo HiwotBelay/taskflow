@@ -24,12 +24,33 @@ async function bootstrap() {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
-        callback(null, true);
-      } else {
-        // In production, only allow configured origins
-        callback(null, allowedOrigins.some(allowed => origin.includes(allowed.replace('https://', '').replace('http://', ''))));
+      // In development, allow all origins
+      if (process.env.NODE_ENV === 'development') {
+        return callback(null, true);
       }
+      
+      // In production, check against allowed origins
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      // Also check if origin matches any allowed origin (for subdomains)
+      const originMatches = allowedOrigins.some(allowed => {
+        const allowedDomain = allowed.replace('https://', '').replace('http://', '');
+        const originDomain = origin.replace('https://', '').replace('http://', '');
+        return originDomain === allowedDomain || originDomain.endsWith('.' + allowedDomain);
+      });
+      
+      if (originMatches) {
+        return callback(null, true);
+      }
+      
+      // Allow Vercel domains by default
+      if (origin.includes('.vercel.app') || origin.includes('vercel.app')) {
+        return callback(null, true);
+      }
+      
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
