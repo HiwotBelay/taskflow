@@ -66,10 +66,19 @@ async function bootstrap() {
     }),
   );
 
-  // Global prefix (excludes health check at root)
-  app.setGlobalPrefix('api', {
-    exclude: [{ path: '', method: RequestMethod.GET }],
+  // Health check at root (before prefix)
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/', (req, res) => {
+    res.json({
+      message: 'TaskFlow API is running',
+      status: 'ok',
+      api: '/api',
+      version: '1.0.0',
+    });
   });
+
+  // Global prefix
+  app.setGlobalPrefix('api');
 
   await app.listen(port);
   console.log(`🚀 Backend server running on http://localhost:${port}/api`);
