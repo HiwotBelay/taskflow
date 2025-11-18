@@ -4,19 +4,20 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 
 ## 🎯 Features
 
-### Core Features
+### Core Features (Challenge Requirements)
 
 - ✅ **Adding Projects** - Create and manage multiple projects with descriptions and deadlines
 - ✅ **Tracking Task/Project Progress** - Real-time progress tracking with visual indicators
-- ✅ **Delegating Work to Team Members** - Assign tasks to team members with role-based access
+- ✅ **Delegating Work to Team Members** - Assign tasks to team members with role-based access control
 - ✅ **Setting Deadlines** - Set deadlines for both projects and individual tasks
 - ✅ **Tracking Issues** - Report and track issues related to tasks
 - ✅ **Adjusting Work Schedules** - Reschedule tasks and projects with automatic notifications
-- ✅ **Real-time Notifications** - WebSocket-based notifications for task assignments and schedule changes
+- ✅ **Real-time Notifications** - WebSocket-based notifications when users are assigned tasks
 
 ### Additional Features
 
 - 🔐 JWT-based authentication and authorization
+- 👥 Role-Based Access Control (RBAC) - Admin, Manager, and Team Member roles
 - 📊 Dashboard with project statistics and overview
 - 🎨 Modern, responsive UI with dark mode support
 - 🔔 Real-time notifications via WebSocket
@@ -26,7 +27,6 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 ## 🛠 Tech Stack
 
 **Frontend:**
-
 - React 19
 - Next.js 16
 - TypeScript
@@ -36,8 +36,7 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 - Zod Validation
 
 **Backend:**
-
-- NestJS
+- NestJS 10
 - TypeORM
 - PostgreSQL
 - JWT Authentication
@@ -46,7 +45,6 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 - Class Validator
 
 **Database:**
-
 - PostgreSQL 15+
 
 ## 🚀 Quick Start
@@ -60,8 +58,8 @@ A comprehensive full-stack task management system built with NestJS, React, and 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd Vintage
+git clone https://github.com/HiwotBelay/taskflow.git
+cd taskflow
 ```
 
 ### 2. Database Setup
@@ -86,16 +84,18 @@ Create a database named `taskflow_db` and a user `taskflow_user` with password `
 cd backend
 npm install
 
-# Create .env file with the following variables:
-# DATABASE_HOST=localhost
-# DATABASE_PORT=5432
-# DATABASE_NAME=taskflow_db
-# DATABASE_USER=taskflow_user
-# DATABASE_PASSWORD=password
-# JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-# JWT_EXPIRES_IN=7d
-# PORT=3001
-# FRONTEND_URL=http://localhost:3000
+# Create .env file
+cat > .env << EOF
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=taskflow_db
+DATABASE_USER=taskflow_user
+DATABASE_PASSWORD=password
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=7d
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+EOF
 
 npm run start:dev
 ```
@@ -109,8 +109,10 @@ The backend will run on `http://localhost:3001`
 cd frontend
 npm install
 
-# Create .env.local file with:
-# NEXT_PUBLIC_API_URL=http://localhost:3001/api
+# Create .env.local file
+cat > .env.local << EOF
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+EOF
 
 npm run dev
 ```
@@ -126,21 +128,29 @@ The frontend will run on `http://localhost:3000`
 ## 📁 Project Structure
 
 ```
-Vintage/
-├── frontend/         # Next.js frontend application
-│   ├── app/          # Next.js app directory
-│   ├── components/   # React components
-│   ├── lib/          # Utilities and API client
-│   ├── hooks/        # React hooks
-│   ├── public/       # Static assets
-│   └── package.json  # Frontend dependencies
+taskflow/
+├── frontend/              # Next.js frontend application
+│   ├── app/              # Next.js app directory (pages)
+│   ├── components/       # React components
+│   │   ├── ui/          # Reusable UI components
+│   │   └── ...          # Feature components
+│   ├── lib/             # Utilities and API client
+│   ├── hooks/           # React hooks
+│   ├── public/          # Static assets
+│   └── package.json     # Frontend dependencies
 │
-└── backend/          # NestJS backend application
+└── backend/              # NestJS backend application
     ├── src/
-    │   ├── modules/  # Feature modules (auth, projects, tasks, etc.)
-    │   ├── database/ # Database configuration
-    │   └── main.ts   # Entry point
-    └── package.json  # Backend dependencies
+    │   ├── modules/     # Feature modules
+    │   │   ├── auth/    # Authentication module
+    │   │   ├── projects/# Projects module
+    │   │   ├── tasks/   # Tasks module
+    │   │   ├── issues/  # Issues module
+    │   │   ├── team-members/ # Team members module
+    │   │   └── notifications/ # Notifications module
+    │   ├── database/    # Database configuration
+    │   └── main.ts      # Application entry point
+    └── package.json     # Backend dependencies
 ```
 
 ## 📡 API Endpoints
@@ -157,28 +167,28 @@ Vintage/
 
 - `GET /api/projects` - Get all projects (requires auth)
 - `GET /api/projects/:id` - Get project by ID
-- `POST /api/projects` - Create new project
+- `POST /api/projects` - Create new project (Admin/Manager only)
   - Body: `{ name, description?, deadline? }`
-- `PATCH /api/projects/:id` - Update project (supports schedule adjustment)
+- `PATCH /api/projects/:id` - Update project (Admin/Manager/Creator only)
   - Body: `{ name?, description?, deadline?, status? }`
-- `DELETE /api/projects/:id` - Delete project
+- `DELETE /api/projects/:id` - Delete project (Admin/Manager/Creator only)
 
 ### Tasks
 
 - `GET /api/tasks?projectId=:id` - Get all tasks (optionally filtered by project)
 - `GET /api/tasks/:id` - Get task by ID
-- `POST /api/tasks` - Create new task
+- `POST /api/tasks` - Create new task (Admin/Manager only)
   - Body: `{ title, description?, projectId, assignedTo?, priority?, dueDate? }`
-- `PATCH /api/tasks/:id` - Update task (supports schedule adjustment)
+- `PATCH /api/tasks/:id` - Update task
   - Body: `{ title?, description?, assignedTo?, priority?, status?, dueDate? }`
-- `DELETE /api/tasks/:id` - Delete task
+  - Team Members can only update status of assigned tasks
+- `DELETE /api/tasks/:id` - Delete task (Admin/Manager/Creator only)
 
 ### Team Members
 
 - `GET /api/team-members?status=:status` - Get all team members
 - `GET /api/team-members/:id` - Get team member by ID
 - `POST /api/team-members` - Create team member
-  - Body: `{ name, email, password, role, phone?, status? }`
 - `PATCH /api/team-members/:id/status` - Update team member status
 - `DELETE /api/team-members/:id` - Delete team member
 
@@ -200,6 +210,26 @@ Vintage/
 - `DELETE /api/notifications/:id` - Delete notification
 
 **Note:** All endpoints except `/api/auth/*` require JWT authentication via `Authorization: Bearer <token>` header.
+
+## 🔐 Role-Based Access Control
+
+The system implements three user roles with different permissions:
+
+### Admin
+- Full CRUD access to all resources
+- Can create, update, and delete projects and tasks
+- Can assign tasks to any team member
+
+### Manager
+- Full CRUD access to all resources
+- Can create, update, and delete projects and tasks
+- Can assign tasks to any team member
+
+### Team Member
+- **View-only** access to projects and tasks
+- Can only **update status** of tasks assigned to them
+- Cannot create, delete, or reassign tasks
+- Cannot modify project details
 
 ## ⚙️ Environment Variables
 
@@ -231,6 +261,45 @@ FRONTEND_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 ```
 
+## 🚢 Deployment
+
+### Production Deployment
+
+The application is deployed using:
+
+- **Frontend**: [Vercel](https://vercel.com) - Next.js hosting
+- **Backend**: [Render](https://render.com) - Node.js hosting
+- **Database**: [Neon](https://neon.tech) - Managed PostgreSQL
+
+### Live URLs
+
+- **Frontend**: [Your Vercel URL]
+- **Backend API**: [Your Render URL]/api
+
+### Deployment Steps
+
+1. **Database Setup (Neon)**
+   - Create account at [neon.tech](https://neon.tech)
+   - Create a new project
+   - Copy connection credentials
+
+2. **Backend Deployment (Render)**
+   - Create account at [render.com](https://render.com)
+   - Connect GitHub repository
+   - Set root directory to `backend`
+   - Configure build command: `npm install && npm run build`
+   - Configure start command: `npm run start:prod`
+   - Add environment variables (database credentials, JWT secret, etc.)
+
+3. **Frontend Deployment (Vercel)**
+   - Create account at [vercel.com](https://vercel.com)
+   - Import GitHub repository
+   - Set root directory to `frontend`
+   - Add environment variable: `NEXT_PUBLIC_API_URL` = your backend URL
+
+4. **Update CORS**
+   - Update `FRONTEND_URL` in backend environment variables to your Vercel URL
+
 ## 🎨 Features in Detail
 
 ### Adjusting Work Schedules
@@ -238,13 +307,11 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api
 The system provides comprehensive schedule adjustment capabilities:
 
 1. **Task Schedule Adjustment:**
-
    - Edit any task to change its due date
    - Automatic notifications sent to assigned team members
    - Visual indicators show schedule changes
 
 2. **Project Schedule Adjustment:**
-
    - Update project deadlines
    - All team members with tasks in the project are notified
    - Progress tracking automatically updates
@@ -270,10 +337,6 @@ The system provides comprehensive schedule adjustment capabilities:
 - Mark as read/unread functionality
 - Notification history
 
-## 📸 Screenshots
-
-_Add screenshots of your application here to showcase the UI and features._
-
 ## 🧪 Testing
 
 ```bash
@@ -297,7 +360,7 @@ npm run migration:run
 
 ### Code Style
 
-The project uses ESLint and Prettier for code formatting. Run:
+The project uses ESLint and Prettier for code formatting:
 
 ```bash
 # Backend
@@ -306,216 +369,13 @@ npm run lint
 npm run format
 
 # Frontend
+cd frontend
 npm run lint
 ```
 
-## 🚢 Deployment
+## 📸 Screenshots
 
-This guide covers deploying the full-stack application to production.
-
-### Architecture Overview
-
-- **Frontend**: Deploy to Vercel (Next.js)
-- **Backend**: Deploy to Railway, Render, or Fly.io (NestJS)
-- **Database**: Use managed PostgreSQL (Supabase, Neon, Railway, or Render)
-
-### Step 1: Deploy Database (PostgreSQL)
-
-Choose one of these managed PostgreSQL services:
-
-#### Option A: Supabase (Recommended - Free tier available)
-
-1. Go to [supabase.com](https://supabase.com) and create an account
-2. Create a new project
-3. Go to Settings → Database
-4. Copy the connection string (it looks like: `postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres`)
-
-#### Option B: Neon (Recommended - Free tier available)
-
-1. Go to [neon.tech](https://neon.tech) and create an account
-2. Create a new project
-3. Copy the connection string from the dashboard
-
-#### Option C: Railway
-
-1. Go to [railway.app](https://railway.app) and create an account
-2. Create a new project → Add PostgreSQL
-3. Copy the connection string from the Variables tab
-
-### Step 2: Deploy Backend
-
-#### Using Railway (Recommended)
-
-1. **Create Railway Account**
-
-   - Go to [railway.app](https://railway.app)
-   - Sign up with GitHub
-
-2. **Deploy Backend**
-
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository
-   - Select the `backend` folder as the root directory
-
-3. **Set Environment Variables**
-   In Railway dashboard, add these variables:
-
-   ```env
-   DATABASE_HOST=your-db-host
-   DATABASE_PORT=5432
-   DATABASE_NAME=your-db-name
-   DATABASE_USER=your-db-user
-   DATABASE_PASSWORD=your-db-password
-   JWT_SECRET=your-super-secret-jwt-key-min-32-characters
-   JWT_EXPIRES_IN=7d
-   PORT=3001
-   FRONTEND_URL=https://your-frontend-url.vercel.app
-   ```
-
-4. **Deploy**
-   - Railway will automatically detect it's a Node.js project
-   - It will run `npm install` and `npm run build`
-   - Add a start command: `npm run start:prod`
-   - Railway will provide a URL like: `https://your-backend.up.railway.app`
-
-#### Using Render
-
-1. Go to [render.com](https://render.com) and create an account
-2. Click "New" → "Web Service"
-3. Connect your GitHub repository
-4. Set:
-   - **Root Directory**: `backend`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm run start:prod`
-5. Add all environment variables (same as Railway)
-6. Deploy
-
-### Step 3: Deploy Frontend (Vercel)
-
-1. **Push to GitHub**
-
-   ```bash
-   git add .
-   git commit -m "Ready for deployment"
-   git push origin main
-   ```
-
-2. **Deploy to Vercel**
-
-   - Go to [vercel.com](https://vercel.com)
-   - Sign up/Login with GitHub
-   - Click "Add New Project"
-   - Import your repository
-   - Configure:
-     - **Root Directory**: `frontend`
-     - **Framework Preset**: Next.js
-     - **Build Command**: `npm run build` (auto-detected)
-     - **Output Directory**: `.next` (auto-detected)
-
-3. **Set Environment Variables**
-   In Vercel dashboard → Settings → Environment Variables:
-
-   ```env
-   NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app/api
-   ```
-
-   (Replace with your actual backend URL)
-
-4. **Deploy**
-   - Click "Deploy"
-   - Vercel will build and deploy your frontend
-   - You'll get a URL like: `https://your-app.vercel.app`
-
-### Step 4: Update CORS Settings
-
-After deploying, update your backend's `FRONTEND_URL` environment variable to your Vercel URL:
-
-```env
-FRONTEND_URL=https://your-app.vercel.app
-```
-
-Also update `backend/src/main.ts` CORS settings if needed to include your production URL.
-
-### Step 5: Run Database Migrations
-
-After deployment, run migrations to create tables:
-
-```bash
-# Option 1: SSH into your backend server and run:
-cd backend
-npm run migration:run
-
-# Option 2: Use Railway/Render console
-# Or add a migration script to run on deploy
-```
-
-### Environment Variables Summary
-
-#### Backend (Railway/Render)
-
-```env
-DATABASE_HOST=your-db-host
-DATABASE_PORT=5432
-DATABASE_NAME=your-db-name
-DATABASE_USER=your-db-user
-DATABASE_PASSWORD=your-db-password
-JWT_SECRET=your-super-secret-jwt-key-change-this
-JWT_EXPIRES_IN=7d
-PORT=3001
-FRONTEND_URL=https://your-frontend.vercel.app
-```
-
-#### Frontend (Vercel)
-
-```env
-NEXT_PUBLIC_API_URL=https://your-backend.railway.app/api
-```
-
-### Testing Production Deployment
-
-1. Visit your Vercel URL
-2. Register a new account
-3. Test all features:
-   - Create projects
-   - Create tasks
-   - Assign tasks
-   - Test notifications
-   - Test role-based permissions
-
-### Troubleshooting
-
-**Backend won't connect to database:**
-
-- Check database connection string
-- Ensure database allows connections from your backend host
-- Verify all database credentials are correct
-
-**CORS errors:**
-
-- Ensure `FRONTEND_URL` in backend matches your Vercel URL exactly
-- Check that CORS settings in `main.ts` include your production URL
-
-**WebSocket not working:**
-
-- Ensure WebSocket connections are allowed on your backend host
-- Check that `FRONTEND_URL` is set correctly for WebSocket CORS
-
-### Free Tier Services Summary
-
-- **Vercel**: Free for personal projects
-- **Railway**: $5/month free credit (usually enough for small projects)
-- **Render**: Free tier available (with limitations)
-- **Supabase**: Free tier with 500MB database
-- **Neon**: Free tier with 3GB database
-
-### Alternative: Local Development Setup
-
-If the company wants to run it locally instead of deploying:
-
-1. They need PostgreSQL installed or Docker
-2. Follow the "Quick Start" section above
-3. All instructions work the same way
+_Add screenshots of your application here to showcase the UI and features._
 
 ## 🤝 Contributing
 
@@ -527,7 +387,7 @@ MIT
 
 ## 👤 Author
 
-**Hiwot**
+**Hiwot Belay**
 
 - Built for Vintage Technologies Internship Challenge
 
