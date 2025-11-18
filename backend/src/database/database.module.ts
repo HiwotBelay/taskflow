@@ -34,6 +34,7 @@ import { Notification } from '../modules/notifications/entities/notification.ent
         
         const port = parseInt(configService.get('DATABASE_PORT', '5432'), 10);
         const isSupabase = cleanHost.includes('supabase.co') || cleanHost.includes('pooler.supabase.com');
+        const isNeon = cleanHost.includes('neon.tech');
         
         return {
           type: 'postgres',
@@ -45,7 +46,7 @@ import { Notification } from '../modules/notifications/entities/notification.ent
           entities: [Project, Task, TeamMember, Issue, Notification],
           synchronize: true,
           logging: configService.get('NODE_ENV') === 'development',
-          ssl: isSupabase ? { rejectUnauthorized: false } : false,
+          ssl: (isSupabase || isNeon) ? { rejectUnauthorized: false } : false,
           extra: {
             // Force IPv4 for Supabase connections
             ...(isSupabase && {
